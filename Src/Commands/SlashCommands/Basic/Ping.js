@@ -1,4 +1,4 @@
-const { Colors } = require('discord.js')
+const { Colors } = require('../../../../Colors')
 module.exports = {
 	name: "ping",
 	description: "Run this to see my ping.",
@@ -9,8 +9,10 @@ module.exports = {
 	 * @param {*} container 
 	 */
 	run: async(client, interaction, container) => {
+		const WithoutHast = Colors.map(x => x.replace('#', ''))
+		const randomColor = WithoutHast[Math.floor(Math.random() * WithoutHast.length)]
 		const ping = new container.Discord.EmbedBuilder()
-		.setColor(Colors.Blurple)
+		.setColor(randomColor)
 		.setTimestamp()
 		.setTitle('🏓╎ Pong!')
 		.setDescription(`🏠╎Websocket Latency: ${client.ws.ping}ms\n🤖╎Bot Latency: ${Date.now() - interaction.createdTimestamp}ms`);
