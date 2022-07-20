@@ -1,5 +1,4 @@
 (async () => {
-const functions = require('./Functions/Roles')
 const Discord = require("discord.js");
 const config = require("./Config");
 const redis = require('redis')
@@ -40,7 +39,6 @@ client.commands.slashCommands = new Discord.Collection();
 client.commands.buttonCommands = new Discord.Collection();
 client.commands.selectMenus = new Discord.Collection();
 client.db = redisClient
-client.functions = functions
     
 const Handler = require(`${path}/Src/Structures/Handlers/Handler`);
 await Handler.loadMessageCommands(client, path);
