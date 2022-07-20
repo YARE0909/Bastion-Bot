@@ -1,6 +1,6 @@
 const { ApplicationCommandType } = require('discord.js')
 module.exports = {
-    name: "log",
+    name: "testcontext",
     type: ApplicationCommandType.Message,
     /**
      * 
@@ -11,7 +11,7 @@ module.exports = {
     run: async(client, interaction, container) => {
         console.log(interaction.channel.messages.cache.get(interaction.targetId) ?? await interaction.channel.messages.fetch(interaction.targetId))
         await interaction.reply({
-            content: 'Check console.'
+            content: 'This is a context menu command! Click on me, then click Apps > testcontext'
         })
     }
 }
