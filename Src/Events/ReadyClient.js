@@ -5,7 +5,7 @@ module.exports = {
     name: "ready",
     once: true,
     run: async(client) => {
-        client.user.setActivity('Your Mom', {
+        client.user.setActivity('Polars Mom', {
             type: ActivityType.Watching,
         })
         const ClientBox = new Box({
