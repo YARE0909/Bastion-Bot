@@ -14,6 +14,7 @@ module.exports = {
 
   // Command Callback
   run: async (client, interaction, container) => {
+    let networth = await client.db.get(`Networth_${interaction.member.id}`);
     await interaction.reply({
       embeds: [
         {
@@ -21,10 +22,14 @@ module.exports = {
             name: interaction.user.tag,
             icon_url: interaction.user.avatarURL({ dynamic: true }),
           },
-          thumbnail: {
-            url: interaction.user.avatarURL,
-          },
-          color: container.Config.color.invisible,
+          fields: [
+            {
+              name: "Networth",
+              value: `¤ ${parseInt(networth).toLocaleString("en-US")}`,
+            },
+          ],
+          title: "User Profile",
+          color: container.Config.color.cyan,
         },
       ],
     });
