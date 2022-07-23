@@ -13,7 +13,7 @@ module.exports = {
    */
 
   // Command Callback
-  run: async (client, interaction, container) => {    
+  run: async (client, interaction, container) => {
 
     const row = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
