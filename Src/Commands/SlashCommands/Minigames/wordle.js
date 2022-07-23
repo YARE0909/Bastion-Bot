@@ -1,17 +1,18 @@
-const { default: axios } = require("axios");
-const {
-  ActionRowBuilder,
-  ModalBuilder,
-  TextInputBuilder,
-  TextInputStyle,
-} = require("discord.js");
-const { InteractionType } = require("discord.js");
+const { ApplicationCommandOptionType } = require('discord.js');
+
 
 module.exports = {
   // Define Command
   name: "guess",
   description: "Guess the word based on the given hints",
-  options: [],
+  options: [
+    {
+      name: "word",
+      description: "Enter your word",
+      type: ApplicationCommandOptionType.String,
+      required: true,
+    },
+  ],
   cooldown: 0,
   /**
    *
@@ -22,9 +23,9 @@ module.exports = {
 
   // Command Callback
   run: async (client, interaction, container) => {
-    const fetchWord = await axios.get("https://random-word-api.herokuapp.com/word");
-    const word = fetchWord.data[0];
-    
+    // const fetchWord = await axios.get("https://random-word-api.herokuapp.com/word");
+    // const word = fetchWord.data[0];
+
     await interaction.reply({
       content:
         "⬜⬜⬜⬜⬜\n⬜⬜⬜⬜⬜\n⬜⬜⬜⬜⬜\n⬜⬜⬜⬜⬜\n⬜⬜⬜⬜⬜\n⬜⬜⬜⬜⬜",
