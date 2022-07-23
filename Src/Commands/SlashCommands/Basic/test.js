@@ -2,7 +2,7 @@ const { Colors } = require('../../../../Colors')
 module.exports = {
 	name: "test",
 	description: "This is a test command.",
-	cooldown: 5000,
+	cooldown: 2000,
 	/**
 	 * 
 	 * @param {import('discord.js').Client} client 

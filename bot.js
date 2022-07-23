@@ -43,7 +43,7 @@ client.db = redisClient
 const Handler = require(`${path}/Src/Structures/Handlers/Handler`);
 await Handler.loadMessageCommands(client, path);
 await Handler.loadEvents(client);
-await client.login(process.env.token);
+await client.login(process.env.token2);
 await Handler.loadSlashCommands(client, path);
 await Handler.loadContextMenus(client, path);
 await Handler.loadButtonCommands(client, path);

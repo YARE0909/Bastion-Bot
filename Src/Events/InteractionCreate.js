@@ -15,5 +15,12 @@ module.exports = {
         else if (interaction.isSelectMenu()) loadCommandOptions(client, interaction, client.commands.selectMenus.get(interaction.values[0] ?? interaction.customId), true, "SelectMenus")
         else if (interaction.isMessageContextMenuCommand()) loadCommandOptions(client, interaction, client.commands.contextMenus.get(interaction.commandName), true, "ContextMenus")
         else if (interaction.type === InteractionType.ApplicationCommand) loadCommandOptions(client, interaction, client.commands.slashCommands.get(interaction.commandName), true, "SlashCommand")
+        let user = await client.db.lRange("Users", 0, -1);
+        if (!user.includes(interaction.member.id)) {
+            await client.db.lPush("Users", interaction.member.id);
+            let current_acc = await client.db.set(`Current_${interaction.member.id}`, 0);
+            let savings_acc = await client.db.set(`Savings_${interaction.member.id}`, 5000);
+            await client.db.set(`Networth_${interaction.member.id}`, current_acc + savings_acc);
+        }
     }
 }
