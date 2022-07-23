@@ -1,18 +1,9 @@
-const { ApplicationCommandOptionType, ModalBuilder, TextInputBuilder, ActionRowBuilder, TextInputStyle, CommandInteractionOptionResolver, ButtonBuilder, ButtonStyle } = require('discord.js');
-const axios = require('axios')
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 
 module.exports = {
   // Define Command
-  name: "guess",
-  description: "Guess the word based on the given hints",
-  options: [
-    {
-      name: "word",
-      description: "Enter your word",
-      type: ApplicationCommandOptionType.String,
-      required: true,
-    },
-  ],
+  name: "wordle",
+  description: "Guess the word!",
   cooldown: 0,
   /**
    *
@@ -22,50 +13,34 @@ module.exports = {
    */
 
   // Command Callback
-  run: async (client, interaction, container) => {
-    await interaction.deferReply()
-    let ACTUAL_WORD;
-    let alreadyExists = await client.db.get(`Word_${interaction.guild.id}`);
-    if (!alreadyExists) {
-      const fetchWord = await axios.get("https://random-word-api.herokuapp.com/word?length=5");
-      const word = fetchWord.data[0];
-      ACTUAL_WORD = word
-      await client.db.set(`Word_${interaction.guild.id}`, word)
-    } else {
-      ACTUAL_WORD = alreadyExists
-    }
-    let guessedWord = interaction.options.getString('word').toLowerCase();
-    if (guessedWord.length !== 5) return await interaction.editReply({
-      embeds: [{
-        description: "The word's length should be `5`",
-        color: container.Config.color.invisible
-      }]
-    })
-    console.log(ACTUAL_WORD)
-    //let ACTUAL_WORD = "vague"
-    let WordArray = ACTUAL_WORD.split('');
-    let guessedArray = guessedWord.split('');
-    let sendingArray = []
-    guessedArray.map(x => {
-      if (WordArray.includes(x) && (ACTUAL_WORD.indexOf(x) === guessedArray.indexOf(x))) sendingArray.push(`🟩`)
-      else if (WordArray.includes(x)) sendingArray.push(`🟨`)
-      else sendingArray.push(`⬛`)
-    })
-    let shouldDelete = []
-    await Promise.all(
-      sendingArray.map(async (x) => {
-        if (x === '🟩') shouldDelete.push('k')
-      })
-    )
-    if (shouldDelete.join('') === 'kkkkk') {
-      await client.db.del(`Word_${interaction.guild.id}`)
-      await interaction.channel.send({
-        content: "**Word guessed!** Resetting the word..."
-      })
-    }
-    await interaction.editReply({
-      content: `${guessedArray.map(x => `-${x}  `).join(' ').toUpperCase()}\n${sendingArray.join(' ')}`
-    })
+  run: async (client, interaction, container) => {    
 
+    const row = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId("guess-wordle")
+        .setLabel("Guess!")
+        .setStyle(ButtonStyle.Success)
+        
+    );
+
+    
+
+    await interaction.reply({
+      embeds: [
+        {
+          author: {
+            name: interaction.user.tag,
+            icon_url: interaction.user.avatarURL({ dynamic: true }),
+          },
+          fields: [{
+            name: "You have 6 attempts to guess the word",
+            value: "GO!"
+          }],
+          title: "Wordle",
+          color: 0xffffff,
+        },
+      ],
+      components: [row]
+    });
   },
 };
