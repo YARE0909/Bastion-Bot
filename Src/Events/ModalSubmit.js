@@ -13,23 +13,20 @@ module.exports = {
         let attempts = await client.db.get(`Wordle_Attempt_${interaction.member.id}`);
         let parsedAttempts = parseInt(attempts);
         parsedAttempts += 1;
-
         await client.db.set(`Wordle_Attempt_${interaction.member.id}`, parsedAttempts);
+        let AfterSetattempts = await client.db.get(`Wordle_Attempt_${interaction.member.id}`);
 
         const word = interaction.fields.getTextInputValue("word-input");
 
         let embedEdi = interaction.message.embeds[0];
-        let embedButtons = interaction.message.components[0] // yes stop with the ear rape omg 
-
-        if (parsedAttempts == 6) {
-            await embedEdi["fields"].push({ name: word, value: "Attempt 2" });
-            await embedEdi["fields"].push({ name: "You have used all your attempts", value: "You lost" });
-            embedButtons.components[0] = embedButtons.map(x => {
-              x.components[0] = x.components
-            })
+        if (AfterSetattempts == 6) {
+            embedEdi["fields"].push({ name: word, value: "Attempt 2" });
+            embedEdi["fields"].push({ name: "You have used all your attempts", value: "You lost" });
+            interaction.message.components[0].components[0].data.disabled = true
             await client.db.set(`Wordle_Attempt_${interaction.member.id}`, 0);
             await interaction.update({
               embeds: [embedEdi],
+              components: interaction.message.components
             });
         }else {
             await embedEdi["fields"].push({ name: word, value: "Attempt 2" });
