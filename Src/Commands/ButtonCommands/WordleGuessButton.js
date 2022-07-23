@@ -11,18 +11,21 @@ module.exports = {
   returnNoErrors: true,
   ownerOnly: true,
   run: async (client, interaction, container) => {
-    
-
+    let attempts = await client.db.get(
+      `Wordle_Attempt_${interaction.member.id}`
+    );
+    let parsedAttempts = parseInt(attempts);
+    parsedAttempts += 1;
 
     const modal = new ModalBuilder()
       .setCustomId("wordleModal")
-      .setTitle("Wordle");
+      .setTitle("Wordle | Guess a 5 letter word");
 
     const wordInput = new TextInputBuilder()
       .setCustomId("word-input")
-      // The label is the prompt the user sees for this input
-      .setLabel("Guess a 5 letter word")
-      // Short means only a single line of text
+
+      .setLabel(`Attempt ${parsedAttempts}`)
+
       .setStyle(TextInputStyle.Short);
 
     const firstActionRow = new ActionRowBuilder().addComponents(wordInput);

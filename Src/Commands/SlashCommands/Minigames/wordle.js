@@ -32,15 +32,17 @@ module.exports = {
             name: interaction.user.tag,
             icon_url: interaction.user.avatarURL({ dynamic: true }),
           },
-          fields: [{
-            name: "You have 6 attempts to guess the word",
-            value: "GO!"
-          }],
+          fields: [
+            {
+              name: "You have 6 attempts to guess the word",
+              value: "GO!",
+            },
+          ],
           title: "Wordle",
-          color: 0xffffff,
+          color: 0x0400ff,
         },
       ],
-      components: [row]
+      components: [row],
     });
   },
 };
