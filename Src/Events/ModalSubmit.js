@@ -9,7 +9,7 @@ module.exports = {
      * @param {import('discord.js').ModalSubmitInteraction} interaction 
      * @param {*} container 
      */
-    run: async (client, interaction, container) => {
+    run: async (interaction, client, container) => {
         if (interaction.type === InteractionType.ModalSubmit) {
             // continue the code, THIS IS ONLY CALLED WHEN THE MODAL IS SUBMITTED!!
         }
