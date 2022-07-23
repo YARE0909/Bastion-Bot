@@ -1,18 +1,9 @@
-const { ApplicationCommandOptionType } = require('discord.js');
-
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 
 module.exports = {
   // Define Command
-  name: "guess",
-  description: "Guess the word based on the given hints",
-  options: [
-    {
-      name: "word",
-      description: "Enter your word",
-      type: ApplicationCommandOptionType.String,
-      required: true,
-    },
-  ],
+  name: "wordle",
+  description: "Guess the word!",
   cooldown: 0,
   /**
    *
@@ -22,13 +13,34 @@ module.exports = {
    */
 
   // Command Callback
-  run: async (client, interaction, container) => {
-    // const fetchWord = await axios.get("https://random-word-api.herokuapp.com/word");
-    // const word = fetchWord.data[0];
+  run: async (client, interaction, container) => {    
+
+    const row = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId("guess-wordle")
+        .setLabel("Guess!")
+        .setStyle(ButtonStyle.Success)
+        
+    );
+
+    
 
     await interaction.reply({
-      content:
-        "⬜⬜⬜⬜⬜\n⬜⬜⬜⬜⬜\n⬜⬜⬜⬜⬜\n⬜⬜⬜⬜⬜\n⬜⬜⬜⬜⬜\n⬜⬜⬜⬜⬜",
+      embeds: [
+        {
+          author: {
+            name: interaction.user.tag,
+            icon_url: interaction.user.avatarURL({ dynamic: true }),
+          },
+          fields: [{
+            name: "You have 6 attempts to guess the word",
+            value: "GO!"
+          }],
+          title: "Wordle",
+          color: 0xffffff,
+        },
+      ],
+      components: [row]
     });
   },
 };
