@@ -10,8 +10,8 @@ module.exports = async function (client, message, command, isInteraction, intera
     } else {
         if (command.returnCooldown == false || command.returnNoErrors) return true;
         else {
-            const TIME = Math.floor((Math.floor(oldTime + cooldown / 1000)) / 100000)
-            const COOL_DOWN = Math.floor(cooldown / 1000)
+            const TIME = parseInt(oldTime) + parseInt(cooldown)
+            const TimeStamp = `<t:${Math.floor(TIME / 1000)}:R>`
             await message.reply({
                 embeds: [new Discord.EmbedBuilder()
                     .setAuthor({
@@ -20,7 +20,7 @@ module.exports = async function (client, message, command, isInteraction, intera
                     })
                     .setTimestamp()
                     .setColor(client.randomColor)
-                    .setDescription(`**You are currently on a cooldown!**\n${client.emojis.cache.get('969586604865884200')} *Your cooldown ends <t:${TIME + COOL_DOWN}:R>*`)],
+                    .setDescription(`**You are currently on a cooldown!**\n${client.emojis.cache.get('969586604865884200')} *Your cooldown ends ${TimeStamp}*`)],
                     ephemeral: interactionType ? true : false,
                     allowedMentions: {
                         repliedUser: false
