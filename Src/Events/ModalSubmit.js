@@ -1,4 +1,6 @@
 const { InteractionType, ButtonStyle } = require("discord.js");
+const { wordleEmoteYellow, wordleEmoteGreen } = require("../../Data/emotesData");
+
 module.exports = {
   name: "interactionCreate",
   /**
@@ -26,6 +28,7 @@ module.exports = {
             ephemeral: true,
           });
         } else {
+          
           let attempts = await client.db.get(
             `Wordle_Attempt_${interaction.member.id}`
           );
@@ -44,16 +47,24 @@ module.exports = {
           const ACTUAL_WORD = "vague";
           let wordArray = ACTUAL_WORD.split("");
           let guessedWord = word.split("");
+          let resultWordArray = [];
           let resultArry = [];
           guessedWord.map((x) => {
-            if (wordArray.includes(x.toLowerCase()) && ACTUAL_WORD.indexOf(x.toLowerCase()) === guessedWord.indexOf(x.toLowerCase())) resultArry.push(x.toLowerCase());
-            else if (wordArray.includes(x.toLowerCase()) && ACTUAL_WORD.indexOf(x.toLowerCase()) !== guessedWord.indexOf(x.toLowerCase())) resultArry.push(`(${x.toLowerCase()})`);
+            if (wordArray.includes(x.toLowerCase()) && ACTUAL_WORD.indexOf(x.toLowerCase()) === guessedWord.indexOf(x.toLowerCase())) {
+              resultArry.push(wordleEmoteGreen[x.toLowerCase()]);
+              resultWordArray.push(x.toLowerCase());
+            }
+            else if (wordArray.includes(x.toLowerCase()) && ACTUAL_WORD.indexOf(x.toLowerCase()) !== guessedWord.indexOf(x.toLowerCase())) {
+              resultArry.push(wordleEmoteYellow[x.toLowerCase()]);
+              resultWordArray.push(x.toLowerCase());
+            }
+            
             else resultArry.push("+");
           });
           console.log(resultArry);
+          console.log(resultWordArray);
           
-          if (JSON.stringify(resultArry).toLowerCase() == JSON.stringify(guessedWord).toLowerCase()) {
-            console.log(resultArry);
+          if (JSON.stringify(resultWordArray).toLowerCase() == JSON.stringify(wordArray).toLowerCase()) {
             await embedEdi["fields"].push({
               name: `Attempt ${parsedAttempts}`,
               value: resultArry.join("").toUpperCase(),

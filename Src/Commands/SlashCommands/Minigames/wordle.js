@@ -1,5 +1,5 @@
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
-const canvas = require("canvas");
+
 
 module.exports = {
   // Define Command
