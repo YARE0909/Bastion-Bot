@@ -17,6 +17,7 @@ module.exports = {
     let parsedAttempts = parseInt(attempts);
     parsedAttempts += 1;
 
+
     const modal = new ModalBuilder()
       .setCustomId("wordleModal")
       .setTitle("Wordle | Guess a 5 letter word");

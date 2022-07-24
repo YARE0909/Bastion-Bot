@@ -1,10 +1,11 @@
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+const canvas = require("canvas");
 
 module.exports = {
   // Define Command
   name: "wordle",
   description: "Guess the word!",
-  cooldown: 0,
+  cooldown: 86400000,
   /**
    *
    * @param {import('discord.js').Client} client
@@ -14,16 +15,12 @@ module.exports = {
 
   // Command Callback
   run: async (client, interaction, container) => {
-
     const row = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
         .setCustomId("guess-wordle")
         .setLabel("Guess!")
         .setStyle(ButtonStyle.Success)
-        
     );
-
-    
 
     await interaction.reply({
       embeds: [
