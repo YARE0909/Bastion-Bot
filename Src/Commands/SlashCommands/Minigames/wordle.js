@@ -5,7 +5,7 @@ module.exports = {
   // Define Command
   name: "wordle",
   description: "Guess the word!",
-  cooldown: 86400000,
+  // cooldown: 86400000,
   /**
    *
    * @param {import('discord.js').Client} client

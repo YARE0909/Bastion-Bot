@@ -64,18 +64,25 @@ module.exports = {
           let guessedWord = word.split("");
           let resultWordArray = [];
           let resultArry = [];
-          guessedWord.map((x) => {
-            if (wordArray.includes(x.toLowerCase()) && ACTUAL_WORD.indexOf(x.toLowerCase()) === guessedWord.indexOf(x.toLowerCase())) {
-              resultArry.push(wordleEmoteGreen[x.toLowerCase()]);
-              resultWordArray.push(x.toLowerCase());
+          console.table({
+            actWord: wordArray,
+            guessed: guessedWord
+          })
+          for (let i = 0; i < ACTUAL_WORD.length; i++) {
+            if (ACTUAL_WORD.includes(guessedWord[i])) {
+                    if (ACTUAL_WORD.charAt(i) === guessedWord[i]) {
+                      resultArry.push(wordleEmoteGreen[guessedWord[i].toLowerCase()]);
+                      resultWordArray.push(guessedWord[i]);
+                    }
+                    else {
+                      resultArry.push(wordleEmoteYellow[guessedWord[i].toLowerCase()]);
+                      resultWordArray.push(guessedWord[i]);
+                    }
+            } else {
+              resultArry.push(wordleEmoteRed[guessedWord[i].toLowerCase()]);
+              resultWordArray.push(guessedWord[i]);
             }
-            else if (wordArray.includes(x.toLowerCase()) && ACTUAL_WORD.indexOf(x.toLowerCase()) !== guessedWord.indexOf(x.toLowerCase())) {
-              resultArry.push(wordleEmoteYellow[x.toLowerCase()]);
-              resultWordArray.push(x.toLowerCase());
-            }
-            
-            else resultArry.push(wordleEmoteRed[x.toLowerCase()]);
-          });
+        }
           
           if (JSON.stringify(resultWordArray).toLowerCase() == JSON.stringify(wordArray).toLowerCase()) {
             await embedEdi["fields"].push({
