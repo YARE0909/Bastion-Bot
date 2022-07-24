@@ -1,5 +1,6 @@
+const { default: axios } = require("axios");
 const { InteractionType, ButtonStyle } = require("discord.js");
-const { wordleEmoteYellow, wordleEmoteGreen } = require("../../Data/emotesData");
+const { wordleEmoteYellow, wordleEmoteGreen, wordleEmoteRed } = require("../../Data/emotesData");
 
 module.exports = {
   name: "interactionCreate",
@@ -44,7 +45,21 @@ module.exports = {
 
           let embedEdi = interaction.message.embeds[0];
 
-          const ACTUAL_WORD = "vague";
+          let ACTUAL_WORD;
+          let alreadyExists = await client.db.get(
+            `Word_${interaction.member.id}`
+          );
+          if (!alreadyExists) {
+            const fetchWord = await axios.get(
+              "https://random-word-api.herokuapp.com/word?length=5"
+            );
+            const word = fetchWord.data[0];
+            ACTUAL_WORD = word;
+            await client.db.set(`Word_${interaction.member.id}`, word);
+          } else {
+            ACTUAL_WORD = alreadyExists;
+          }
+          console.log(ACTUAL_WORD);
           let wordArray = ACTUAL_WORD.split("");
           let guessedWord = word.split("");
           let resultWordArray = [];
@@ -59,10 +74,8 @@ module.exports = {
               resultWordArray.push(x.toLowerCase());
             }
             
-            else resultArry.push("+");
+            else resultArry.push(wordleEmoteRed[x.toLowerCase()]);
           });
-          console.log(resultArry);
-          console.log(resultWordArray);
           
           if (JSON.stringify(resultWordArray).toLowerCase() == JSON.stringify(wordArray).toLowerCase()) {
             await embedEdi["fields"].push({
@@ -75,6 +88,13 @@ module.exports = {
               value: `You guessed the word on attempt ${parsedAttempts}`,
             });
 
+            // Reward
+
+            const current_bal = await client.db.get(`Current_${interaction.member.id}`);
+            let parsed_current_bal = parseInt(current_bal);
+            parsed_current_bal += 10000
+            await client.db.set(`Current_${interaction.member.id}`, parsed_current_bal);
+
             interaction.message.components[0].components[0].data.style =
               ButtonStyle.Secondary;
             interaction.message.components[0].components[0].data.disabled = true;
@@ -83,7 +103,8 @@ module.exports = {
               embeds: [embedEdi],
               components: interaction.message.components,
             });
-
+            await client.db.del(`Word_${interaction.member.id}`);
+            
           }else if (parsedAttempts >= 6) {
             await embedEdi["fields"].push({
               name: `Attempt ${parsedAttempts}`,
@@ -92,7 +113,7 @@ module.exports = {
 
             await embedEdi["fields"].push({
               name: "You have used all your attempts",
-              value: "Game Over",
+              value: `The word was ${ACTUAL_WORD}`,
             });
             interaction.message.components[0].components[0].data.style =
               ButtonStyle.Secondary;
@@ -102,6 +123,7 @@ module.exports = {
               embeds: [embedEdi],
               components: interaction.message.components,
             });
+            await client.db.del(`Word_${interaction.member.id}`);
           } else {
             await embedEdi["fields"].push({
               name: `Attempt ${parsedAttempts}`,

@@ -11,6 +11,18 @@ module.exports = {
   returnNoErrors: true,
   ownerOnly: true,
   run: async (client, interaction, container) => {
+
+    if (interaction.message.interaction.user.id !== interaction.member.id)
+      return await interaction.reply({
+        embeds: [
+          {
+            description: "Your not that guy pal",
+            color: 0xff0019,
+          },
+        ],
+        ephemeral: true,
+      });
+
     let attempts = await client.db.get(
       `Wordle_Attempt_${interaction.member.id}`
     );
