@@ -1,6 +1,10 @@
 const { default: axios } = require("axios");
 const { InteractionType, ButtonStyle } = require("discord.js");
-const { wordleEmoteYellow, wordleEmoteGreen, wordleEmoteRed } = require("../../Data/emotesData");
+const {
+  wordleEmoteYellow,
+  wordleEmoteGreen,
+  wordleEmoteRed,
+} = require("../../Data/emotesData");
 
 module.exports = {
   name: "interactionCreate",
@@ -29,7 +33,6 @@ module.exports = {
             ephemeral: true,
           });
         } else {
-          
           let attempts = await client.db.get(
             `Wordle_Attempt_${interaction.member.id}`
           );
@@ -66,41 +69,86 @@ module.exports = {
           let resultArry = [];
           console.table({
             actWord: wordArray,
-            guessed: guessedWord
-          })
+            guessed: guessedWord,
+          });
           for (let i = 0; i < ACTUAL_WORD.length; i++) {
             if (ACTUAL_WORD.includes(guessedWord[i])) {
-                    if (ACTUAL_WORD.charAt(i) === guessedWord[i]) {
-                      resultArry.push(wordleEmoteGreen[guessedWord[i].toLowerCase()]);
-                      resultWordArray.push(guessedWord[i]);
-                    }
-                    else {
-                      resultArry.push(wordleEmoteYellow[guessedWord[i].toLowerCase()]);
-                      resultWordArray.push(guessedWord[i]);
-                    }
+              if (ACTUAL_WORD.charAt(i) === guessedWord[i]) {
+                resultArry.push(wordleEmoteGreen[guessedWord[i].toLowerCase()]);
+                resultWordArray.push(guessedWord[i]);
+              } else {
+                resultArry.push(
+                  wordleEmoteYellow[guessedWord[i].toLowerCase()]
+                );
+                resultWordArray.push(guessedWord[i]);
+              }
             } else {
               resultArry.push(wordleEmoteRed[guessedWord[i].toLowerCase()]);
               resultWordArray.push(guessedWord[i]);
             }
-        }
-          
-          if (JSON.stringify(resultWordArray).toLowerCase() == JSON.stringify(wordArray).toLowerCase()) {
+          }
+
+          if (
+            JSON.stringify(resultWordArray).toLowerCase() ==
+            JSON.stringify(wordArray).toLowerCase()
+          ) {
             await embedEdi["fields"].push({
               name: `Attempt ${parsedAttempts}`,
               value: resultArry.join("").toUpperCase(),
             });
 
             await embedEdi["fields"].push({
-              name: "You Won!",
+              name: "Correct word!",
               value: `You guessed the word on attempt ${parsedAttempts}`,
             });
 
             // Reward
 
-            const current_bal = await client.db.get(`Current_${interaction.member.id}`);
+            const current_bal = await client.db.get(
+              `Current_${interaction.member.id}`
+            );
+            const currentLevel = await client.db.get(
+              `Level_${interaction.member.id}`
+            );
+            const currentXP = await client.db.get(
+              `XP_${interaction.member.id}`
+            );
+            let parsedLevel = parseInt(currentLevel);
+            let parsedXP = parseInt(currentXP);
+            parsedXP +=
+              Math.floor(Math.random() * (100 - 50 + 1) + 10) * parsedLevel;
+
+            if (parsedXP >= 1000 * parsedLevel) {
+              parsedLevel += 1;
+              await client.db.set(
+                `Level_${interaction.member.id}`,
+                parsedLevel
+              );
+              await client.db.set(`XP_${interaction.member.id}`, 0);
+              await interaction.channel.send({
+                embeds: [
+                  {
+                    author: {
+                      name: interaction.user.tag,
+                      icon_url: interaction.user.avatarURL({ dynamic: true }),
+                    },
+                    title: "You have leveled up!",
+                    description: `You are now level ${parsedLevel}`,
+                    color: 0xffffff,
+                  },
+                ],
+              });
+            } else {
+              await client.db.set(`XP_${interaction.member.id}`, parsedXP);
+            }
+
             let parsed_current_bal = parseInt(current_bal);
-            parsed_current_bal += 10000
-            await client.db.set(`Current_${interaction.member.id}`, parsed_current_bal);
+            console.log(parsedXP);
+            parsed_current_bal += 10000;
+            await client.db.set(
+              `Current_${interaction.member.id}`,
+              parsed_current_bal
+            );
 
             interaction.message.components[0].components[0].data.style =
               ButtonStyle.Secondary;
@@ -111,8 +159,7 @@ module.exports = {
               components: interaction.message.components,
             });
             await client.db.del(`Word_${interaction.member.id}`);
-            
-          }else if (parsedAttempts >= 6) {
+          } else if (parsedAttempts >= 6) {
             await embedEdi["fields"].push({
               name: `Attempt ${parsedAttempts}`,
               value: resultArry.join("").toUpperCase(),

@@ -15,6 +15,8 @@ module.exports = {
   // Command Callback
   run: async (client, interaction, container) => {
     let networth = await client.db.get(`Networth_${interaction.member.id}`);
+    let userLevel = await client.db.get(`Level_${interaction.member.id}`);
+    let userXP = await client.db.get(`XP_${interaction.member.id}`);
     await interaction.reply({
       embeds: [
         {
@@ -26,6 +28,12 @@ module.exports = {
             {
               name: "Networth",
               value: `¤ ${parseInt(networth).toLocaleString("en-US")}`,
+              inline: true
+            },
+            {
+              name: `Level ${userLevel}`,
+              value: `XP ${parseInt(userXP).toLocaleString("en-US")}/${userLevel*1000}`,
+              inline: true
             },
           ],
           title: "User Profile",
