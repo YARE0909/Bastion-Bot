@@ -59,5 +59,11 @@ Client Events              ::    Initiating ${client.events.size} events.
 
         console.log(chalk.bold.greenBright(ClientBox))
         console.log(chalk.bold.blueBright(CommandsBox))
+
+        let clanID = await client.db.get("ClanIDs");
+        if (!clanID) {
+            await client.db.set('ClanIDs', 1000000)
+        }
+
     }
 }

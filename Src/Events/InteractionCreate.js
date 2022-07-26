@@ -18,7 +18,7 @@ module.exports = {
             await client.db.set(`Wordle_Attempt_${interaction.member.id}`, 0);
             await client.db.set(`Level_${interaction.member.id}`, 1);
             await client.db.set(`XP_${interaction.member.id}`, 0);
-            await client.db.set(`Clan_${interaction.member.id}`, "");
+            
 
             let current_acc = await client.db.get(`Current_${interaction.member.id}`),
             savings_acc = await client.db.get(`Savings_${interaction.member.id}`)
