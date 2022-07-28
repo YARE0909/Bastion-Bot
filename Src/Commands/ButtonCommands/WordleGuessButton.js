@@ -9,14 +9,14 @@ const {
 module.exports = {
   name: "guess-wordle",
   returnNoErrors: true,
-  ownerOnly: true,
+  ownerOnly: false,
   run: async (client, interaction, container) => {
 
     if (interaction.message.interaction.user.id !== interaction.member.id)
       return await interaction.reply({
         embeds: [
           {
-            description: "Your not that guy pal",
+            title: "Your not that guy pal",
             color: 0xff0019,
           },
         ],

@@ -1,4 +1,4 @@
-const { ApplicationCommandOptionType } = require("discord.js");
+const { ApplicationCommandOptionType, ActionRowBuilder, SelectMenuBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 
 module.exports = {
   // Define Command
@@ -72,6 +72,7 @@ module.exports = {
         await client.db.set(`Clan_${parsedClanIDs}_level`, 1);
         await client.db.set(`Clan_${parsedClanIDs}_xp`, 0);
         await client.db.set(`Clan_${parsedClanIDs}_member_count`, 1);
+        await client.db.set(`Clan_${parsedClanIDs}_leader`, interaction.member.id);
         await client.db.set(`${interaction.member.id}_ClanID`, parsedClanIDs);
 
         await client.db.lPush(
@@ -136,7 +137,7 @@ module.exports = {
     }
     if (interaction.options.getSubcommand() == "info") {
       let userClanID = await client.db.get(`${interaction.member.id}_ClanID`);
-      
+
       if (!userClanID) {
         await interaction.reply({
           embeds: [
@@ -155,52 +156,92 @@ module.exports = {
         let clanName = await client.db.get(`Clan_${parsedUserClanID}_name`);
         let clanLevel = await client.db.get(`Clan_${parsedUserClanID}_level`);
         let clanXP = await client.db.get(`Clan_${parsedUserClanID}_xp`);
-        let clanMemberCount = await client.db.get(
-          `Clan_${parsedUserClanID}_member_count`
-        );
+        let clanMemberCount = await client.db.get(`Clan_${parsedUserClanID}_member_count`);
+        let waitlist = await client.db.lRange(`Clan_${parsedUserClanID}_waitList`, 0, -1);
+        console.log(waitlist);
+        let members = await client.db.lRange(`Clan_${parsedUserClanID}_members`, 0, -1);
 
-        let members = await client.db.lRange(
-          `Clan_${parsedUserClanID}_members`,
-          0,
-          -1
-        );
-        console.log(members);
+        if (waitlist.length !== 0) {
+          console.log(waitlist);
+          const reqButton = new ButtonBuilder()
+                            .setCustomId('requests-button')
+                            .setStyle(ButtonStyle.Primary)
+                            .setLabel('Join Requests')
 
-        let embed = [
-          {
-            author: {
-              name: interaction.user.tag,
-              icon_url: interaction.user.avatarURL({ dynamic: true }),
-            },
-            fields: [
-              {
-                name: `Clan Level ${clanLevel}`,
-                value: `${clanXP}/${clanLevel * 2000}`,
-                inline: true,
+          const mainRow = new ActionRowBuilder()
+                          .addComponents(reqButton)
+
+          let embedReq = [
+            {
+              author: {
+                name: interaction.user.tag,
+                icon_url: interaction.user.avatarURL({ dynamic: true }),
               },
-              {
-                name: `Member Count`,
-                value: `Current Members: ${clanMemberCount}`,
-                inline: true,
+              fields: [
+                {
+                  name: `Clan Level ${clanLevel}`,
+                  value: `${clanXP}/${clanLevel * 2000}`,
+                  inline: true,
+                },
+                {
+                  name: `Member Count`,
+                  value: `Current Members: ${clanMemberCount}`,
+                  inline: true,
+                },
+              ],
+              title: clanName,
+              color: 0xffffff,
+              footer: {
+                text: `Clan ID: ${parsedUserClanID}`,
               },
-            ],
-            title: clanName,
-            color: 0xffffff,
-            footer: {
-              text: `Clan ID: ${parsedUserClanID}`,
             },
-          },
-        ];
-
-          embed[0]["fields"].push({
-            name: "Member",
-            value: members.map(x => `<@${x}>`).join('\n'),
-            inline: false,
+          ];
+          await interaction.reply({
+            embeds: embedReq,
+            components:[mainRow]
           });
+          
+        } else {
+          let embed = [
+            {
+              author: {
+                name: interaction.user.tag,
+                icon_url: interaction.user.avatarURL({ dynamic: true }),
+              },
+              fields: [
+                {
+                  name: `Clan Level ${clanLevel}`,
+                  value: `${clanXP}/${clanLevel * 2000}`,
+                  inline: true,
+                },
+                {
+                  name: `Member Count`,
+                  value: `Current Members: ${clanMemberCount}`,
+                  inline: true,
+                },
+              ],
+              title: clanName,
+              color: 0xffffff,
+              footer: {
+                text: `Clan ID: ${parsedUserClanID}`,
+              },
+            },
+          ];
+          
+          for (let i = 0; i < members.length; i++) {
+            embed[0]["fields"].push({
+              name: "Member",
+              value: members.map((i) => `<@${i}>`).join("\n"),
+              inline: false,
+            });
+            
+          }
+  
+          await interaction.reply({
+            embeds: embed,
+          });
+        }
 
-        await interaction.reply({
-          embeds: embed,
-        });
       }
     }
     if (interaction.options.getSubcommand() == "join") {
@@ -223,7 +264,7 @@ module.exports = {
         });
       } else {
         let userClanID = await client.db.get(`${interaction.member.id}_ClanID`);
-        if (userClanID) {
+        if (userClanID && interaction.member.id != 784315703733387264) {
           await interaction.reply({
             embeds: [
               {
@@ -237,11 +278,13 @@ module.exports = {
             ],
           });
         } else {
-          
           await client.db.lPush(`Clan_${userInput}_waitList`, interaction.member.id.toString());
+          let pendingReq = await client.db.get(`Clan_${userInput}_pendingReq`);
+          if (!pendingReq) {await client.db.set(`Clan_${userInput}_pendingReq`, "true");
+          }
           let waitlist = await client.db.lRange(`Clan_${userInput}_waitList`, 0, -1);
           console.log(waitlist);
-         
+
           await interaction.reply({
             embeds: [
               {
@@ -250,7 +293,8 @@ module.exports = {
                   icon_url: interaction.user.avatarURL({ dynamic: true }),
                 },
                 title: `Successfully sent a request to join ${clanID}`,
-                description: "You will be notified if you are accepted or rejected from the clan",
+                description:
+                  "You will be notified if you are accepted or rejected from the clan",
                 color: 0xffffff,
               },
             ],
