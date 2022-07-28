@@ -123,9 +123,30 @@ module.exports = {
             await client.db.set(`${waitlist[currentIndex]}_ClanID`, userClanID);
             await client.db.lRem(`Clan_${userClanID}_waitList`, 0,waitlist[currentIndex]);
             await client.db.lPush(`Clan_${userClanID}_members`, waitlist[currentIndex]);
+            row.components[1].setDisabled(true);
+
+            let acceptEmb = {
+              title: "Request Accepted!",
+              color: 0xffffff,
+            };
+
+            await i.update({
+              embeds: [acceptEmb],
+              components: []
+            });
 
           } else if (i.customId == "reject-req") {
             await client.db.lRem(`Clan_${userClanID}_waitList`, 0,waitlist[currentIndex]);
+
+            let rejectEmb = {
+              title: "Request Accepted!",
+              color: 0xffffff,
+            };
+
+            await i.update({
+              embeds: [rejectEmb],
+              components: [],
+            });
           }
         }
       })
