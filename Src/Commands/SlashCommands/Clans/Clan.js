@@ -125,7 +125,7 @@ module.exports = {
         for (let i = 0; i < members.length; i++) {
           embed[0]["fields"].push({
             name: "Member",
-            value: members[i],
+            value: `<@${members[i]}>`,
           });
         }
 
@@ -192,15 +192,11 @@ module.exports = {
           },
         ];
 
-        for (let i = 0; i < members.length; i++) {
           embed[0]["fields"].push({
             name: "Member",
-            value: `${client.users.cache.get(members[i]).username}#${
-              client.users.cache.get(members[i]).discriminator
-            }`,
+            value: members.map(x => `<@${x}>`).join('\n'),
             inline: false,
           });
-        }
 
         await interaction.reply({
           embeds: embed,
